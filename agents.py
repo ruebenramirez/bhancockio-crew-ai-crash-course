@@ -1,9 +1,15 @@
+import os
 from crewai import Agent
 from textwrap import dedent
-from langchain_openai import ChatOpenAI
+from langchain_community.llms import Ollama
 
 from tools.search_tools import SearchTools
 from tools.calculator_tools import CalculatorTools
+
+os.environ["OPENAI_MODEL_NAME"] ='llama2:latest'  # Adjust based on available model
+os.environ["OPENAI_API_BASE"] = 'http://100.101.34.131:11434/v1'
+
+ollama_llama2 = Ollama(model=os.environ["OPENAI_MODEL_NAME"])
 
 """
 Creating Agents Cheat Sheet:
@@ -34,11 +40,6 @@ Notes:
 
 
 class TravelAgents:
-    def __init__(self):
-        self.OpenAIGPT35 = ChatOpenAI(
-            model_name="gpt-3.5-turbo", temperature=0.7)
-        self.OpenAIGPT4 = ChatOpenAI(model_name="gpt-4", temperature=0.7)
-
     def expert_travel_agent(self):
         return Agent(
             role="Expert Travel Agent",
@@ -54,7 +55,7 @@ class TravelAgents:
                 CalculatorTools.calculate
             ],
             verbose=True,
-            llm=self.OpenAIGPT4,
+            llm=ollama_llama2
         )
 
     def city_selection_expert(self):
@@ -66,7 +67,7 @@ class TravelAgents:
                 f"""Select the best cities based on weather, season, prices, and traveler interests"""),
             tools=[SearchTools.search_internet],
             verbose=True,
-            llm=self.OpenAIGPT4,
+            llm=ollama_llama2
         )
 
     def local_tour_guide(self):
@@ -78,5 +79,5 @@ class TravelAgents:
                 f"""Provide the BEST insights about the selected city"""),
             tools=[SearchTools.search_internet],
             verbose=True,
-            llm=self.OpenAIGPT4,
+            llm=ollama_llama2
         )
